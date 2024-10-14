@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class SignedIn extends StatelessWidget {
-  // Step 5
-  const SignedIn({
-    Key? key,
+  final String username ; //  created a variable to hold the username.
+  final String Password ; //  created a variable to hold the Password.
+   SignedIn({
+    Key? key, required this.username, required this.Password,
   }) : super(key: key);
   // Step 6
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
         title: const Text("Sign in"),
         backgroundColor: Colors.deepPurpleAccent,
@@ -16,9 +18,9 @@ class SignedIn extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children:  [
             // Step 9
-            Text("Welcome username"),
+            Text("Welcome $username"),  // username was taken as input and displayed after signed in
             Icon(
               Icons.check_circle,
               color: Colors.green,
