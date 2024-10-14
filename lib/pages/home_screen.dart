@@ -3,8 +3,11 @@ import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({Key? key}) : super(key: key);
+
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final ValueNotifier<bool> isUsernameEmpty = ValueNotifier<bool>(false); // To track username validation state
+  final ValueNotifier<bool> isPasswordEmpty = ValueNotifier<bool>(false); // To track password validation state
 
   @override
   Widget build(BuildContext context) {
@@ -15,58 +18,79 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
+          // Username TextField
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                hintText: "Username",
-                prefixIcon: Icon(
-                  Icons.account_circle,
-                  color: Colors.deepPurpleAccent,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  borderSide: BorderSide(
-                    color: Colors.deepPurpleAccent,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isUsernameEmpty,
+              builder: (context, isEmpty, child) {
+                return TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    hintText: "Username",
+                    prefixIcon: const Icon(
+                      Icons.account_circle,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                      borderSide: BorderSide(
+                        color: isEmpty ? Colors.red : Colors.deepPurpleAccent, // Highlight in red if empty
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
+
+          // Password TextField
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              controller: passwordController,
-              obscureText: true, // To secure the password
-              decoration: const InputDecoration(
-                hintText: "Password",
-                prefixIcon: Icon(
-                  Icons.key,
-                  color: Colors.deepPurpleAccent,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  borderSide: BorderSide(
-                    color: Colors.deepPurpleAccent,
+            child: ValueListenableBuilder<bool>(
+              valueListenable: isPasswordEmpty,
+              builder: (context, isEmpty, child) {
+                return TextField(
+                  controller: passwordController,
+                  obscureText: true, // To secure the password
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    prefixIcon: const Icon(
+                      Icons.key,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+                      borderSide: BorderSide(
+                        color: isEmpty ? Colors.red : Colors.deepPurpleAccent, // Highlight in red if empty
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
+
+          // Login Button
           ElevatedButton(
             style: ButtonStyle(
               backgroundColor:
                   MaterialStateProperty.all<Color>(Colors.deepPurpleAccent),
             ),
             onPressed: () {
-              if (passwordController.text == "12345" &&  usernameController.text.isNotEmpty)
-                  {
-                // If the password is 12345 and the username is not empty push to signed in page 
+              // Validate username and password
+              bool isUsernameValid = usernameController.text.isNotEmpty;
+              bool isPasswordValid = passwordController.text == "12345";
+
+              // Update validation states
+              isUsernameEmpty.value = !isUsernameValid;
+              isPasswordEmpty.value = !isPasswordValid;
+
+              // If both are valid, navigate to signed in page
+              if (isUsernameValid && isPasswordValid) {
                 GoRouter.of(context).go('/signed_in', extra: usernameController.text);
-                    
               } else {
-                // Show error SnackBar if the password is incorrect or username is empty
+                // Show error SnackBar if validation fails
                 showErrorSnackBar(context, 'Invalid username or password');
               }
             },
